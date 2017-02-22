@@ -10,6 +10,7 @@ public class Book {
     private String title;
     private String price;
     private String cover;
+    private String[] synopsis;
 
     public String getIsbn() {
         return isbn;
@@ -41,6 +42,14 @@ public class Book {
 
     public void setCover(String cover) {
         this.cover = cover;
+    }
+
+    public String[] getSynopsis() {
+        return synopsis;
+    }
+
+    public void setSynopsis(String[] synopsis) {
+        this.synopsis = synopsis;
     }
 
     @Override

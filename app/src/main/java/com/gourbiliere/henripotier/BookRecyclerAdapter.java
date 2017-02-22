@@ -1,6 +1,7 @@
 package com.gourbiliere.henripotier;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +16,12 @@ import java.util.List;
 public class BookRecyclerAdapter extends RecyclerView.Adapter {
     private final List<Book> books;
     private final LayoutInflater inflater;
+    private BookListFragment.OnBookSelectedListener listener;
 
-    public BookRecyclerAdapter(LayoutInflater from, List<Book> books) {
+    public BookRecyclerAdapter(LayoutInflater from, List<Book> books, BookListFragment.OnBookSelectedListener listener) {
         this.inflater = from;
         this.books = books;
+        this.listener = listener;
     }
 
     @Override
@@ -29,8 +32,15 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final int pos = position;
         BookItemView itemView = (BookItemView) holder.itemView;
-        itemView.bindView(books.get(position));
+        itemView.bindView(books.get(pos));
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onBookSelected(books.get(pos));
+            }
+        });
     }
 
     @Override

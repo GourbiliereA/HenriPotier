@@ -32,7 +32,7 @@ import timber.log.Timber;
  * Created by Alex GOURBILIERE on 22/02/2017.
  */
 
-public class HenriPotierActivity extends AppCompatActivity {
+public class HenriPotierActivity extends AppCompatActivity implements BookListFragment.OnBookSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,38 +41,20 @@ public class HenriPotierActivity extends AppCompatActivity {
 
         Timber.plant(new Timber.DebugTree());
 
-        addBooks();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.containerFrameLayout, new BookListFragment(), "List")
+                    .commit();
+        }
     }
 
-    private void addBooks() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://henri-potier.xebia.fr/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        HenriPotierService service = retrofit.create(HenriPotierService.class);
-
-        Call<List<Book>> booksCall = service.getBooks();
-
-        booksCall.enqueue(new Callback<List<Book>>() {
-            @Override
-            public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
-                List<Book> books = new ArrayList<Book>();
-
-                for (Book b : response.body()) {
-                    Timber.i(b.getCover());
-                    books.add(b);
-                }
-
-                RecyclerView recyclerView = (RecyclerView) findViewById(R.id.bookRecyclerView);
-                recyclerView.setLayoutManager(new LinearLayoutManager(HenriPotierActivity.this));
-                recyclerView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(HenriPotierActivity.this), books));
-            }
-
-            @Override
-            public void onFailure(Call<List<Book>> call, Throwable t) {
-                Timber.e("Failure when calling service to get books : %s", t.getMessage());
-            }
-        });
+    @Override
+    public void onBookSelected(Book book) {
+        BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();
+        bookDetailsFragment.setBook(book);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
+                .addToBackStack("List")
+                .commit();
     }
 }
