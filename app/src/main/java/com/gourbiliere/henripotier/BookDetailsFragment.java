@@ -60,7 +60,6 @@ public class BookDetailsFragment extends Fragment {
             }
         }
         textViewBookSynopsis.setText(sb.toString());
-//        textViewBookTitle.setText("Test");
     }
 
     public void setBook(Book book) {

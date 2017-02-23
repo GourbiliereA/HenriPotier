@@ -1,5 +1,6 @@
 package com.gourbiliere.henripotier;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,9 +42,28 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
 
         Timber.plant(new Timber.DebugTree());
 
-        if (savedInstanceState == null) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.containerFrameLayout, new BookListFragment(), "List")
+                        .commit();
+            }
+        } else {
+//            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.containerBookListFrameLayout, new BookListFragment(), "List")
+                        .commit();
+//            }
+
+            Book book = new Book();
+            book.setTitle("Test Book");
+            book.setCover("http://www.konbini.com/fr/files/2016/02/harry-potter.jpg");
+            String[] array = {};
+            book.setSynopsis(array);
+            BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();
+            bookDetailsFragment.setBook(book);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.containerFrameLayout, new BookListFragment(), "List")
+                    .replace(R.id.containerBookDetailsFrameLayout, bookDetailsFragment, "Details")
                     .commit();
         }
     }
@@ -52,9 +72,17 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
     public void onBookSelected(Book book) {
         BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();
         bookDetailsFragment.setBook(book);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
-                .addToBackStack("List")
-                .commit();
+
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
+                    .addToBackStack("List")
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.containerBookDetailsFrameLayout, bookDetailsFragment, "Details")
+                    .commit();
+        }
     }
 }
