@@ -1,10 +1,13 @@
 package com.gourbiliere.henripotier.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Alex GOURBILIERE on 22/02/2017.
  */
 
-public class Book {
+public class Book implements Parcelable {
 
     private String isbn;
     private String title;
@@ -66,5 +69,19 @@ public class Book {
     @Override
     public int hashCode() {
         return isbn.hashCode();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(isbn);
+        dest.writeString(title);
+        dest.writeString(price);
+        dest.writeString(cover);
+        dest.writeStringArray(synopsis);
     }
 }

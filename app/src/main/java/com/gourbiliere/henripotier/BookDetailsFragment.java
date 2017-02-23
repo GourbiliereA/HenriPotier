@@ -2,6 +2,8 @@ package com.gourbiliere.henripotier;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,7 +20,7 @@ import com.squareup.picasso.Picasso;
  * Created by Alex GOURBILIERE on 22/02/2017.
  */
 
-public class BookDetailsFragment extends Fragment {
+public class BookDetailsFragment extends Fragment implements Parcelable {
 
     private Book book;
 
@@ -47,22 +49,38 @@ public class BookDetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Picasso.with(getContext()).load(book.getCover()).resize(408, 600).centerCrop().into(imageViewBookCover);
+        if (book != null) {
+            Picasso.with(getContext()).load(book.getCover()).resize(408, 600).centerCrop().into(imageViewBookCover);
 
-        textViewBookTitle.setText(book.getTitle());
+            textViewBookTitle.setText(book.getTitle());
 
-        StringBuilder sb = new StringBuilder();
-        String[] syn = book.getSynopsis();
-        for (int i = 0 ; i < syn.length ; i++) {
-            sb.append(syn[i]);
-            if (i != 0) {
-                sb.append("\n\n");
+            StringBuilder sb = new StringBuilder();
+            String[] syn = book.getSynopsis();
+            for (int i = 0; i < syn.length; i++) {
+                sb.append(syn[i]);
+                if (i != 0) {
+                    sb.append("\n\n");
+                }
             }
+            textViewBookSynopsis.setText(sb.toString());
         }
-        textViewBookSynopsis.setText(sb.toString());
     }
 
     public void setBook(Book book) {
         this.book = book;
+    }
+
+    public Book getBook() {
+        return this.book;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(book, flags);
     }
 }

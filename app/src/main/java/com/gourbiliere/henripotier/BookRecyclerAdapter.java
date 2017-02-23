@@ -14,11 +14,11 @@ import java.util.List;
  * Created by Alex GOURBILIERE on 22/02/2017.
  */
 public class BookRecyclerAdapter extends RecyclerView.Adapter {
-    private final List<Book> books;
+    private final Book[] books;
     private final LayoutInflater inflater;
     private BookListFragment.OnBookSelectedListener listener;
 
-    public BookRecyclerAdapter(LayoutInflater from, List<Book> books, BookListFragment.OnBookSelectedListener listener) {
+    public BookRecyclerAdapter(LayoutInflater from, Book[] books, BookListFragment.OnBookSelectedListener listener) {
         this.inflater = from;
         this.books = books;
         this.listener = listener;
@@ -34,18 +34,18 @@ public class BookRecyclerAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final int pos = position;
         BookItemView itemView = (BookItemView) holder.itemView;
-        itemView.bindView(books.get(pos));
+        itemView.bindView(books[pos]);
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onBookSelected(books.get(pos));
+                listener.onBookSelected(books[pos]);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return books.size();
+        return books.length;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

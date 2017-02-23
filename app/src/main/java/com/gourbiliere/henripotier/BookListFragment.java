@@ -2,6 +2,8 @@ package com.gourbiliere.henripotier;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,9 +34,9 @@ import timber.log.Timber;
  * Created by Alex GOURBILIERE on 22/02/2017.
  */
 
-public class BookListFragment extends Fragment {
+public class BookListFragment extends Fragment implements Parcelable {
 
-    private List<Book> books;
+    private Book[] books;
 
     private RecyclerView recyclerView;
     private OnBookSelectedListener listener;
@@ -57,30 +59,45 @@ public class BookListFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://henri-potier.xebia.fr/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HenriPotierService service = retrofit.create(HenriPotierService.class);
-        Call<List<Book>> booksCall = service.getBooks();
+        if (books == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://henri-potier.xebia.fr/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            HenriPotierService service = retrofit.create(HenriPotierService.class);
+            Call<List<Book>> booksCall = service.getBooks();
 
-        booksCall.enqueue(new Callback<List<Book>>() {
-            @Override
-            public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
-                books = new ArrayList<Book>();
-                for (Book b : response.body()) {
-                    books.add(b);
+            booksCall.enqueue(new Callback<List<Book>>() {
+                @Override
+                public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
+                    books = new Book[response.body().size()];
+                    for (int b = 0 ; b < response.body().size() ; b++) {
+                        books[b] = response.body().get(b);
+                    }
+
+                    recyclerView.setLayoutManager(new LinearLayoutManager((Context) listener));
+                    recyclerView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from((Context) listener), books, listener));
                 }
 
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(getContext()), books, listener));
-            }
+                @Override
+                public void onFailure(Call<List<Book>> call, Throwable t) {
+                    Timber.e("Failure when calling service to get books : %s", t.getMessage());
+                }
+            });
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(new BookRecyclerAdapter(LayoutInflater.from(getContext()), books, listener));
+        }
+    }
 
-            @Override
-            public void onFailure(Call<List<Book>> call, Throwable t) {
-                Timber.e("Failure when calling service to get books : %s", t.getMessage());
-            }
-        });
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelableArray(books, flags);
     }
 
     public interface OnBookSelectedListener {

@@ -2,8 +2,11 @@ package com.gourbiliere.henripotier;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +38,9 @@ import timber.log.Timber;
 
 public class HenriPotierActivity extends AppCompatActivity implements BookListFragment.OnBookSelectedListener {
 
+    private BookDetailsFragment bookDetailsFragment;
+    private BookListFragment bookListFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,26 +48,33 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
 
         Timber.plant(new Timber.DebugTree());
 
+        // Retrieving the book when orientation changed
+        if (savedInstanceState != null) {
+            this.bookListFragment = savedInstanceState.getParcelable("bookListFragment");
+            this.bookDetailsFragment = savedInstanceState.getParcelable("bookDetailsFragment");
+        } else {
+            bookDetailsFragment = new BookDetailsFragment();
+            bookListFragment = new BookListFragment();
+        }
+
+
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (savedInstanceState == null) {
+            if (bookDetailsFragment.getBook() != null) {
+                // Not first display = already the details of a book displayed so we display it
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.containerFrameLayout, new BookListFragment(), "List")
+                        .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
+                        .commit();
+            } else {
+                // First display = launch of the app so we display the list of books
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.containerFrameLayout, bookListFragment, "List")
                         .commit();
             }
         } else {
-//            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.containerBookListFrameLayout, new BookListFragment(), "List")
-                        .commit();
-//            }
-
-            Book book = new Book();
-            book.setTitle("Test Book");
-            book.setCover("http://www.konbini.com/fr/files/2016/02/harry-potter.jpg");
-            String[] array = {};
-            book.setSynopsis(array);
-            BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();
-            bookDetailsFragment.setBook(book);
+            // Displaying both list and fragment on the screen
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.containerBookListFrameLayout, bookListFragment, "List")
+                    .commit();
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.containerBookDetailsFrameLayout, bookDetailsFragment, "Details")
                     .commit();
@@ -69,10 +82,16 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
     }
 
     @Override
-    public void onBookSelected(Book book) {
-        BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();
-        bookDetailsFragment.setBook(book);
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("bookListFragment", bookListFragment);
+        outState.putParcelable("bookDetailsFragment", bookDetailsFragment);
 
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBookSelected(Book book) {
+        bookDetailsFragment.setBook(book);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             getSupportFragmentManager().beginTransaction()
@@ -83,6 +102,10 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.containerBookDetailsFrameLayout, bookDetailsFragment, "Details")
                     .commit();
+            // Refreshing manually because not working otherwise
+            Fragment frg = getSupportFragmentManager().findFragmentByTag("Details");
+            final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.detach(frg).attach(frg).commit();
         }
     }
 }
