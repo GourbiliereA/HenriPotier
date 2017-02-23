@@ -13,14 +13,16 @@
         android:id="@+id/coverImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="0.5"
+        android:layout_marginRight="5dp"/>
 
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        tools:text="Garry Potier Tome 1"/>
+        tools:text="Garry Potier Tome 1"
+        android:layout_marginRight="5dp"/>
 
     <TextView
         android:id="@+id/priceTextView"

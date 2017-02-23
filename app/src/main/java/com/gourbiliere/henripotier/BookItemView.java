@@ -41,7 +41,7 @@ public class BookItemView extends LinearLayout {
 
     public void bindView(Book book) {
         textView_name.setText(book.getTitle());
-        textView_price.setText(String.valueOf(book.getPrice()));
+        textView_price.setText(String.valueOf(book.getPrice()) + "€");
         Picasso.with(getContext()).load(book.getCover()).resize(204, 300).centerCrop().into(imageView_cover);
     }
 }
