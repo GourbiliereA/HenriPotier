@@ -57,17 +57,23 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
             bookListFragment = new BookListFragment();
         }
 
+        // Taking off all BackStack when switching to portait/landscape
+        // because having some problems when several
+        while (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStackImmediate();
+        }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // We launch first list fragment, even when we display details to put the fragment in BackStack
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.containerFrameLayout, bookListFragment, "List")
+                    .commit();
+
             if (bookDetailsFragment.getBook() != null) {
                 // Not first display = already the details of a book displayed so we display it
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
-                        .commit();
-            } else {
-                // First display = launch of the app so we display the list of books
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.containerFrameLayout, bookListFragment, "List")
+                        .addToBackStack("List")
                         .commit();
             }
         } else {
@@ -94,11 +100,13 @@ public class HenriPotierActivity extends AppCompatActivity implements BookListFr
         bookDetailsFragment.setBook(book);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Displaying details in full screen
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.containerFrameLayout, bookDetailsFragment, "Details")
                     .addToBackStack("List")
                     .commit();
         } else {
+            // Displaying details in half screen
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.containerBookDetailsFrameLayout, bookDetailsFragment, "Details")
                     .commit();
