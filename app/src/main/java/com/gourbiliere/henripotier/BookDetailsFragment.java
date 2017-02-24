@@ -50,7 +50,8 @@ public class BookDetailsFragment extends Fragment implements Parcelable {
         super.onViewCreated(view, savedInstanceState);
 
         if (book != null) {
-            Picasso.with(getContext()).load(book.getCover()).resize(408, 600).centerCrop().into(imageViewBookCover);
+            // Changing size here in addition to the layout file to make them have all the same size (display)
+            Picasso.with(getContext()).load(book.getCover()).resize(816, 1200).centerCrop().into(imageViewBookCover);
 
             textViewBookTitle.setText(book.getTitle());
 
