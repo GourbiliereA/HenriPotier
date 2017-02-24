@@ -103,7 +103,7 @@ public class HenriPotierActivityTest extends ActivityInstrumentationTestCase2<He
 
 
     private void waitToBeLoaded(int ref) {
-        Espresso.onView(isRoot()).perform(waitId(ref, TimeUnit.SECONDS.toMillis(15)));
+        Espresso.onView(isRoot()).perform(waitId(ref, TimeUnit.SECONDS.toMillis(5)));
     }
 
     // Used to wait asynchronous action to be performed
