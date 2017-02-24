@@ -26,6 +26,7 @@ public class BookDetailsFragment extends Fragment implements Parcelable {
 
     private ImageView imageViewBookCover;
     private TextView textViewBookTitle;
+    private TextView textViewBookPrice;
     private TextView textViewBookSynopsis;
 
     @Override
@@ -40,6 +41,7 @@ public class BookDetailsFragment extends Fragment implements Parcelable {
 
         imageViewBookCover = (ImageView) view.findViewById(R.id.imageView_cover);
         textViewBookTitle = (TextView) view.findViewById(R.id.textView_bookTitle);
+        textViewBookPrice = (TextView) view.findViewById(R.id.textView_bookPrice);
         textViewBookSynopsis = (TextView) view.findViewById(R.id.textView_bookSynopsis);
 
         return view;
@@ -54,6 +56,7 @@ public class BookDetailsFragment extends Fragment implements Parcelable {
             Picasso.with(getContext()).load(book.getCover()).resize(816, 1200).centerCrop().into(imageViewBookCover);
 
             textViewBookTitle.setText(book.getTitle());
+            textViewBookPrice.setText(book.getPrice() + "€");
 
             StringBuilder sb = new StringBuilder();
             String[] syn = book.getSynopsis();
